@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExamPro • Blood Relations Mock Test</title>
+<style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:system-ui,sans-serif;background:#f1f5f9;color:#1e2937;}
+    .page{min-height:100vh;display:none;flex-direction:column;}
+    .active{display:flex;}
+
+    /* Login */
+    #login{background:linear-gradient(135deg,#1e40af,#3b82f6);align-items:center;justify-content:center;}
+    .login-box{background:white;width:92%;max-width:420px;border-radius:24px;padding:40px 30px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.25);}
+    .logo{font-size:48px;font-weight:900;color:#2563eb;margin-bottom:20px;}
+
+    /* Instructions */
+    #instructions{position:relative;}
+    .start-btn{position:fixed;bottom:0;left:0;right:0;background:#2563eb;color:white;padding:22px;font-size:22px;font-weight:700;text-align:center;border:none;cursor:pointer;box-shadow:0 -5px 20px rgba(37,99,235,0.4);z-index:100;}
+
+    /* Header */
+    header{background:white;padding:10px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:100;}
+    .header-logo{font-size:24px;font-weight:800;color:#2563eb;}
+
+    /* Test Screen */
+    #test{flex-direction:column;height:100vh;overflow:hidden;}
+    .palette{
+        background:white;padding:10px 10px;overflow-x:auto;white-space:nowrap;display:flex;gap:12px;
+        border-bottom:1px solid #e2e8f0;flex-shrink:0;position:sticky;top:58px;z-index:90;background:white;
+    }
+    .q-dot{width:40px;height:40px;border-radius:50%;background:#f1f5f9;border:2px solid #cbd5e1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;cursor:pointer;}
+    .q-dot.done{background:#22c55e;color:white;border-color:#22c55e;}
+    .q-dot.current{border-color:#2563eb;background:#dbeafe;}
+
+    .test-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+    .question-area{flex:1;overflow-y:auto;padding:28px 20px;background:white;}
+    .direction{font-weight:700;font-size:1.15rem;margin-bottom:0.8rem;color:#1e2937;}
+    .para{font-weight:bold;font-size:1.08rem;line-height:1.6;margin-bottom:1.8rem;color:#1e2937;}
+    .q-text{font-size:1.35rem;font-weight:600;margin-bottom:28px;line-height:1.45;}
+    .option{padding:18px 24px;margin-bottom:14px;border:2px solid #e2e8f0;border-radius:16px;font-size:1.15rem;cursor:pointer;transition:0.2s;}
+    .option:hover,.option.selected{border-color:#2563eb;background:#eff6ff;}
+    .bottom-nav{
+        padding:16px 20px;background:white;border-top:1px solid #e2e8f0;
+        display:flex;justify-content:space-between;flex-shrink:0;position:sticky;bottom:0;z-index:90;
+    }
+
+    /* Score & Analysis */
+    #score{background:#f1f5f9;}
+    .score-card{height:100vh;width:100%;background:white;display:flex;flex-direction:column;overflow:hidden;}
+    .score-header{background:#2563eb;color:white;padding:10px 10px;text-align:center;}
+    .score-big{font-size:110px;font-weight:900;line-height:1;}
+    .score-sub{font-size:24px;opacity:0.9;margin-top:8px;}
+    .scroll-content{flex:1;overflow-y:auto;padding:30px 20px;background:#f8fafc;}
+    .pie-container{width:210px;height:210px;margin:30px auto;position:relative;}
+    .pie{width:100%;height:100%;border-radius:50%;background:conic-gradient(#22c55e 0% var(--percent),#ef4444 var(--percent) 100%);}
+    .pie-inner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:130px;height:130px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:700;}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;}
+    .stat-box{background:white;padding:10px;border-radius:20px;text-align:center;box-shadow:0 5px 15px rgba(0,0,0,0.05);}
+    .stat-num{font-size:48px;font-weight:700;}
+    .correct{color:#22c55e;}
+    .wrong{color:#ef4444;}
+    .score-footer{position:fixed;bottom:0;left:0;right:0;background:white;padding:10px;display:flex;gap:15px;border-top:1px solid #e2e8f0;z-index:100;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN (same as your code) -->
+<div id="login" class="page active">
+    <div class="login-box">
+        <div class="logo">ExamPro</div>
+        <h1 style="font-size:28px;margin:30px 0 20px;">Blood Relations Mock Test</h1>
+       
+        <div style="text-align:left;margin-bottom:15px;">
+            <label style="font-size:14px;color:#64748b;">User ID</label>
+            <div style="padding:16px 20px;background:#f1f5f9;border-radius:12px;font-size:18px;font-weight:600;">1011011010</div>
+        </div>
+        <div style="text-align:left;">
+            <label style="font-size:14px;color:#64748b;">Password</label>
+            <input id="pass" type="password" placeholder="Enter Password" style="width:100%;padding:16px;border:2px solid #e2e8f0;border-radius:12px;font-size:18px;">
+        </div>
+        <button onclick="login()" style="margin-top:30px;width:100%;padding:18px;background:#2563eb;color:white;border:none;border-radius:16px;font-size:20px;font-weight:700;">Login</button>
+    </div>
+</div>
+
+<!-- INSTRUCTIONS (same) -->
+<div id="instructions" class="page">
+    <div style="max-width:800px;margin:40px auto;padding:20px;text-align:center;">
+        <div style="font-size:42px;font-weight:900;color:#2563eb;margin-bottom:20px;">ExamPro</div>
+        <h1 style="font-size:32px;margin-bottom:10px;">Blood Relations</h1>
+        <p style="color:#64748b;font-size:20px;">15 Minutes • 10 Questions • 10 Marks</p>
+       
+        <div style="margin:60px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;">
+            <div style="background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,0.05);">⏰<br><b style="font-size:32px;">15 Min</b><br>Duration</div>
+            <div style="background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,0.05);">📋<br><b style="font-size:32px;">10</b><br>Questions</div>
+            <div style="background:white;padding:30px;border-radius:20px;box-shadow:0 10px 25px rgba(0,0,0,0.05);">−0.25<br><b style="font-size:32px;">Negative</b><br>Marking</div>
+        </div>
+    </div>
+    <button class="start-btn" onclick="startTest()">Start Test Now →</button>
+</div>
+
+<!-- TEST PAGE -->
+<div id="test" class="page">
+    <header>
+        <div class="header-logo">Exam Pro</div>
+        <div id="timer" style="font-size:20px;font-weight:700;font-family:monospace;color:#1e2937;">14:59</div>
+        <button onclick="submitTest()" style="background:#ef4444;color:white;padding:10px 30px;border:none;border-radius:12px;font-weight:700;cursor:pointer;">Submit</button>
+    </header>
+    <div class="palette" id="palette"></div>
+    <div class="test-main">
+        <div class="question-area" id="question-area"></div>
+        <div class="bottom-nav">
+            <button onclick="prevQ()" style="padding:14px 40px;border:2px solid #cbd5e1;background:white;border-radius:16px;font-weight:600;font-size:14px;">← Previous</button>
+            <button onclick="nextQ()" style="padding:14px 50px;background:#2563eb;color:white;border:none;border-radius:16px;font-weight:600;font-size:14px;">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- SCORE PAGE (same as yours) -->
+<div id="score" class="page">
+    <div class="score-card">
+        <div class="score-header">
+            <div id="score-main" class="score-big">8.75</div>
+            <div class="score-sub">/ 10</div>
+            <div style="margin-top:15px;font-size:20px;">Your Score</div>
+        </div>
+        <div class="scroll-content">
+            <div class="pie-container">
+                <div class="pie" id="pie" style="--percent:90%;"></div>
+                <div class="pie-inner">
+                    <div id="accuracy" style="font-size:48px;font-weight:900;">90</div>
+                    <div style="font-size:14px;color:#64748b;">Accuracy</div>
+                </div>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-box"><div id="correct" class="stat-num correct">9</div><div style="margin-top:8px;font-size:18px;color:#64748b;">Correct</div></div>
+                <div class="stat-box"><div id="wrong" class="stat-num wrong">1</div><div style="margin-top:8px;font-size:18px;color:#64748b;">Wrong</div></div>
+            </div>
+        </div>
+        <div class="score-footer">
+            <button onclick="showAnalysis()" style="flex:1;padding:10px;background:#1e2937;color:white;border:none;border-radius:16px;font-weight:700;font-size:14px;">Detailed Analysis</button>
+            <button onclick="restart()" style="flex:1;padding:10px;background:white;border:2px solid #1e2937;border-radius:16px;font-weight:700;font-size:14px;">Retake Test</button>
+        </div>
+    </div>
+</div>
+
+<!-- ANALYSIS PAGE (same) -->
+<div id="analysis" class="page">
+    <header>
+        <button onclick="backToScore()" style="background:none;border:none;font-size:28px;color:#2563eb;cursor:pointer;margin-right:12px;">←</button>
+        <div style="font-size:22px;font-weight:700;">Detailed Analysis</div>
+    </header>
+    <div id="analysis-content" style="padding:20px;max-width:900px;margin:0 auto;"></div>
+</div>
+
+<script>
+// Questions array (same as your code)
+const questions = [
+    {direction:"Direction (1-2): Study the following information carefully and answer the questions given below.", para:"A family consists of seven members - A, B, C, D, E, F, and G and two married couples. C is the sister-in-law of G and vice versa. A is the father of F. G is the only daughter of D. B is the father-in-law of C. Both E and A are siblings. F is the niece of G. E is unmarried. C has no siblings.", q:"1) Who among the following person is the mother of F?", opt:["A. G","B. C","C. D","D. E","E. None of the above"], ans:1, exp:"C is the mother of F."},
+    {direction:"Direction (1-2): Study the following information carefully and answer the questions given below.", para:"A family consists of seven members - A, B, C, D, E, F, and G and two married couples. C is the sister-in-law of G and vice versa. A is the father of F. G is the only daughter of D. B is the father-in-law of C. Both E and A are siblings. F is the niece of G. E is unmarried. C has no siblings.", q:"2) Which of the following statement(s) is/are true with respect to E?", opt:["A. E and C are married couples","B. E is the son of C","C. E is the father of G","D. E is the brother-in-law of C","E. All are true"], ans:3, exp:"E is the brother-in-law of C."},
+    {direction:"Direction (3-5): Study the following information carefully and answer the questions given below.", para:"A family consists of eight members - G, K, L, O, T, U, V and X and three married couples. X is the father-in-law of G who is the father of U. O is the only daughter of T who is the mother of V. T is the spouse of X. Both U and X are of the opposite gender. K is the mother-in-law of O. L is the paternal grandfather of U.", q:"3) Who among the following person is the mother of U?", opt:["A. V","B. O","C. L","D. K","E. None of the above"], ans:1, exp:"O is the mother of U."},
+    {direction:"Direction (3-5): Study the following information carefully and answer the questions given below.", para:"A family consists of eight members - G, K, L, O, T, U, V and X and three married couples. X is the father-in-law of G who is the father of U. O is the only daughter of T who is the mother of V. T is the spouse of X. Both U and X are of the opposite gender. K is the mother-in-law of O. L is the paternal grandfather of U.", q:"4) Which of the following statement(s) is/are true with respect to the final arrangement?", opt:["A. K has no son","B. U is the son of G","C. T is the father of O","D. Both L and K are couples","E. All are true"], ans:3, exp:"Both L and K are married couples."},
+    {direction:"Direction (3-5): Study the following information carefully and answer the questions given below.", para:"A family consists of eight members - G, K, L, O, T, U, V and X and three married couples. X is the father-in-law of G who is the father of U. O is the only daughter of T who is the mother of V. T is the spouse of X. Both U and X are of the opposite gender. K is the mother-in-law of O. L is the paternal grandfather of U.", q:"5) If V is married to Z, then how is T related to Z?", opt:["A. Son-in-law","B. Brother-in-law","C. Sister-in-law","D. Mother-in-law","E. None of these"], ans:3, exp:"T is the mother-in-law of Z."},
+    {direction:"Direction (6-8): Study the following information carefully and answer the questions given below.", para:"In a family, there are seven persons and four generations. H is married to the only daughter of K, who is the only son of N. L is the brother-inlaw of H who has only one child. J is the grandson of M, who is the mother of H. K has only two children. N is a female member of the family. I is of the same generation as L. H has no siblings.", q:"6) If L is married to A, how is K related to A?", opt:["A. Daughter-in-law","B. Mother-in-law","C. Father-in-law","D. Mother","E. Son-in-law"], ans:2, exp:"K is the father-in-law of A."},
+    {direction:"Direction (6-8): Study the following information carefully and answer the questions given below.", para:"In a family, there are seven persons and four generations. H is married to the only daughter of K, who is the only son of N. L is the brother-inlaw of H who has only one child. J is the grandson of M, who is the mother of H. K has only two children. N is a female member of the family. I is of the same generation as L. H has no siblings.", q:"7) How many male members are there in the family?", opt:["A. 3","B. 4","C. 5","D. 2","E. More than five"], ans:1, exp:"There are 4 male members in the family."},
+    {direction:"Direction (6-8): Study the following information carefully and answer the questions given below.", para:"In a family, there are seven persons and four generations. H is married to the only daughter of K, who is the only son of N. L is the brother-inlaw of H who has only one child. J is the grandson of M, who is the mother of H. K has only two children. N is a female member of the family. I is of the same generation as L. H has no siblings.", q:"8) How is N related to L?", opt:["A. Grandson","B. Granddaughter","C. Grandfather","D. Grandmother","E. None of these"], ans:3, exp:"N is the grandmother of L."},
+    {direction:"Direction (9-10): Study the following information carefully and answer the questions given below.", para:"A family consists of eight members - A, B, H, I, M, Q, R, and V with three married couples. R is the brother-in-law of Q, who is the son-in-law of I. V is the only daughter of I. Neither M nor Q has siblings. M is the mother of A, who is the grandson of H. H is the father of R. Both I and H are married couples. B is the daughter of V.", q:"9) How is R related to B?", opt:["A. Uncle","B. Aunt","C. Father","D. Mother","E. Can’t be determined"], ans:0, exp:"R is the uncle of B."},
+    {direction:"Direction (9-10): Study the following information carefully and answer the questions given below.", para:"A family consists of eight members - A, B, H, I, M, Q, R, and V with three married couples. R is the brother-in-law of Q, who is the son-in-law of I. V is the only daughter of I. Neither M nor Q has siblings. M is the mother of A, who is the grandson of H. H is the father of R. Both I and H are married couples. B is the daughter of V.", q:"10) Four of the following five are alike in a certain way and hence form a group. Who among the following one does not belong to that group?", opt:["A. M","B. V","C. I","D. A","E. B"], ans:3, exp:"A does not belong to the group."}
+];
+
+let current = 0;
+let answers = {};
+let timeLeft = 900;
+let timerId;
+const totalQ = questions.length;
+
+function login() {
+    if (document.getElementById('pass').value === "19991010") {
+        document.getElementById('login').classList.remove('active');
+        document.getElementById('instructions').classList.add('active');
+    } else {
+        alert("Wrong Password! Hint: 19991010");
+    }
+}
+
+function startTest() {
+    document.getElementById('instructions').classList.remove('active');
+    document.getElementById('test').classList.add('active');
+    current = 0; answers = {}; timeLeft = 900;
+    renderPalette();
+    loadQuestion();
+    startTimer();
+}
+
+function startTimer() {
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        let timerElement = document.getElementById('timer');
+        timerElement.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        if (timeLeft <= 300) {
+            timerElement.style.color = '#ef4444'; // Last 5 min red
+        } else {
+            timerElement.style.color = '#1e2937'; // Normal black
+        }
+        if (timeLeft <= 0) submitTest();
+    }, 1000);
+}
+
+function renderPalette() {
+    const pal = document.getElementById('palette');
+    pal.innerHTML = '';
+    for (let i = 0; i < totalQ; i++) {
+        let d = document.createElement('div');
+        d.className = 'q-dot';
+        d.textContent = i + 1;
+        d.onclick = () => { current = i; loadQuestion(); };
+        pal.appendChild(d);
+    }
+}
+
+function loadQuestion() {
+    const q = questions[current];
+    const area = document.getElementById('question-area');
+    area.innerHTML = `
+        <div class="direction">${q.direction}</div>
+        <div class="para">${q.para}</div>
+        <div class="q-text">${q.q}</div>
+        <div id="options"></div>
+    `;
+
+    const opts = document.getElementById('options');
+    q.opt.forEach((text, i) => {
+        let div = document.createElement('div');
+        div.className = 'option';
+        div.innerHTML = `<span style="font-weight:700;margin-right:16px;">${String.fromCharCode(65+i)}</span>${text}`;
+
+        // ─── Yeh updated toggle logic hai ────────────────────────────────
+        div.onclick = () => {
+            if (answers[current] === i) {
+                // Already selected → deselect
+                delete answers[current];
+            } else {
+                // Select kar do
+                answers[current] = i;
+            }
+            loadQuestion();     // UI refresh
+            updatePalette();
+        };
+        // ──────────────────────────────────────────────────────────────
+
+        if (answers[current] === i) div.classList.add('selected');
+        opts.appendChild(div);
+    });
+
+    updatePalette();
+}
+
+function updatePalette() {
+    document.querySelectorAll('.q-dot').forEach((dot, i) => {
+        dot.classList.remove('done', 'current');
+        if (answers[i] !== undefined) dot.classList.add('done');
+        if (i === current) dot.classList.add('current');
+    });
+}
+
+function nextQ() {
+    current = (current + 1) % totalQ;
+    loadQuestion();
+}
+
+function prevQ() {
+    current = (current - 1 + totalQ) % totalQ;
+    loadQuestion();
+}
+
+function submitTest() {
+    clearInterval(timerId);
+    let correct = 0, wrong = 0;
+    questions.forEach((q, i) => {
+        if (answers[i] === q.ans) correct++;
+        else if (answers[i] !== undefined) wrong++;
+    });
+    const rawScore = correct - (wrong * 0.25);
+    const accuracy = (correct + wrong) > 0 ? Math.round((correct / (correct + wrong)) * 100) : 0;
+    document.getElementById('score-main').textContent = rawScore.toFixed(2);
+    document.getElementById('accuracy').textContent = accuracy;
+    document.getElementById('pie').style.setProperty('--percent', accuracy + '%');
+    document.getElementById('correct').textContent = correct;
+    document.getElementById('wrong').textContent = wrong;
+    document.getElementById('test').classList.remove('active');
+    document.getElementById('score').classList.add('active');
+}
+
+function showAnalysis() {
+    document.getElementById('score').classList.remove('active');
+    document.getElementById('analysis').classList.add('active');
+    let html = '';
+    questions.forEach((q, i) => {
+        let userAns = answers[i];
+        let status = userAns === q.ans ? '<span style="color:#22c55e;font-weight:700;">✓ Correct</span>' :
+                     (userAns !== undefined ? '<span style="color:#ef4444;font-weight:700;">✗ Wrong</span>' : '<span style="color:#ca8a04;">Not attempted</span>');
+        html += `
+        <div style="margin-bottom:40px;padding-bottom:25px;border-bottom:1px solid #e2e8f0;">
+            <div class="direction">${q.direction}</div>
+            <div class="para">${q.para}</div>
+            <div style="font-size:1.25rem;margin-bottom:16px;"><strong>Q${i+1}.</strong> ${q.q}</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
+                ${q.opt.map((o,idx) => `
+                    <div style="padding:15px;border-radius:12px;background:${idx===q.ans?'#bbf7d0':(idx===userAns?'#fecaca':'#f1f5f9')}">
+                        ${String.fromCharCode(65+idx)}. ${o}
+                    </div>
+                `).join('')}
+            </div>
+            <div style="font-size:1rem;margin-top:10px;">${status}</div>
+            <div style="margin-top:12px;color:#4b5563;">Explanation: ${q.exp}</div>
+        </div>`;
+    });
+    document.getElementById('analysis-content').innerHTML = html;
+}
+
+function backToScore() {
+    document.getElementById('analysis').classList.remove('active');
+    document.getElementById('score').classList.add('active');
+}
+
+function restart() { location.reload(); }
+</script>
+</body>
+</html>
